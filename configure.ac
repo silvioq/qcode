@@ -1,6 +1,8 @@
 AC_INIT([qcode],[0.0.1], [silvioq@gmail.com])
 AM_INIT_AUTOMAKE
 AC_PROG_CC
+AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
