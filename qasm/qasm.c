@@ -20,7 +20,7 @@
 void usage(char* prg){
 
    puts( "Uso:" );
-   printf( "  %s [-d] [-v] filename.qasm\n", prg );
+   printf( "  %s [-d] [-v] [filename.qasm]\n", prg );
    exit( EXIT_FAILURE );
    
 }
@@ -30,9 +30,8 @@ int  main(int argc, char** argv) {
 
         int  flags = 0;
         int  opt = 0;
+        int  ret;
         char* filename;
-
-        if( argc < 2 ) usage( argv[0] );
 
         while ((opt = getopt(argc, argv, "dv")) != -1){
             switch(opt){
@@ -47,11 +46,13 @@ int  main(int argc, char** argv) {
             }
         }
 
-        if( optind > argc ) usage( argv[0] );
-        filename = argv[optind];
-     
-        if( !qasm_parse( filename, flags ) )
-            return EXIT_FAILURE;
-        else return EXIT_SUCCESS;
+        if( optind == argc ) 
+            ret = qasm_parse( stdin, flags );
+        else{
+            filename = argv[optind];
+            ret = qasm_parse_filename( filename, flags );
+        }
+
+        return ret ? EXIT_SUCCESS : EXIT_FAILURE;
 
 } 

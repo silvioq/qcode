@@ -7,13 +7,17 @@
  * */
 
 
+#ifndef  QASM_H
+#define  QASM_H  1
 
-
+#include <stdio.h>
 
 QCode*  qasm;
 
 #define  QASM_DEBUG    1
 #define  QASM_VERBOSE  2
 
-int   qasm_parse( char* filename, int flags );
+int   qasm_parse_filename( char* filename, int flags );
+int   qasm_parse( FILE* f, int flags );
 
+#endif

@@ -109,6 +109,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <string.h>
 #include "qasm.h"
 
 #define YYSTYPE long
@@ -169,7 +170,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 173 "qasm-parser.c"
+#line 174 "qasm-parser.c"
 
 #ifdef short
 # undef short
@@ -456,8 +457,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    59,    59,    62,    65,    71,    74,    80,    87,    93,
-      94,    95,    99,   100,   103,   104
+       0,    60,    60,    63,    66,    72,    75,    81,    88,    94,
+      95,    96,   100,   101,   104,   105
 };
 #endif
 
@@ -1366,49 +1367,49 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 59 "qasm-parser.y"
+#line 60 "qasm-parser.y"
     {
           qcode_dcrlab_long( qasm, (char*)((yyvsp[(1) - (2)])), (yyvsp[(2) - (2)]) );
      }
     break;
 
   case 3:
-#line 62 "qasm-parser.y"
+#line 63 "qasm-parser.y"
     {
           qcode_dcrlab_str( qasm, (char*)((yyvsp[(1) - (2)])), (char*)((yyvsp[(2) - (2)])) );
      }
     break;
 
   case 4:
-#line 65 "qasm-parser.y"
+#line 66 "qasm-parser.y"
     { 
           qcode_crlab ( qasm, (char*)((yyvsp[(1) - (1)])) );
      }
     break;
 
   case 5:
-#line 71 "qasm-parser.y"
+#line 72 "qasm-parser.y"
     {
           qcode_op( qasm, (yyvsp[(1) - (4)]), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
      }
     break;
 
   case 6:
-#line 74 "qasm-parser.y"
+#line 75 "qasm-parser.y"
     {
           qcode_op( qasm, (yyvsp[(1) - (4)]), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
      }
     break;
 
   case 7:
-#line 80 "qasm-parser.y"
+#line 81 "qasm-parser.y"
     {
           qcode_opnlab( qasm, (yyvsp[(1) - (2)]), (char*)((yyvsp[(2) - (2)])) );
      }
     break;
 
   case 8:
-#line 87 "qasm-parser.y"
+#line 88 "qasm-parser.y"
     { 
           qcode_op( qasm, (yyvsp[(1) - (1)]), 0, 0 );
      }
@@ -1416,7 +1417,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1420 "qasm-parser.c"
+#line 1421 "qasm-parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1630,24 +1631,40 @@ yyreturn:
 }
 
 
-#line 117 "qasm-parser.y"
+#line 118 "qasm-parser.y"
 
 
-int   qasm_parse( char* filename, int flags ){
-    if( flags | QASM_DEBUG ) yydebug = 1;
-    if( flags | QASM_VERBOSE ) qasm_verbose = 1;
-
-    qasmin = fopen( filename, "r" );
+int   qasm_parse_filename( char* filename, int flags ){
+    FILE* ff = fopen( filename, "r" );
+    int  ret;
     if( !qasmin ){
-        qasmprintf( "Error %s (%d) al abrir %s\n", strerror( errno ), errno, filename );
-        return NULL;
+        qasmprintf( "Error %d (%s) al abrir \"%s\"\n", errno, strerror( errno ), filename );
+        return 0;
     }
+
+    ret = qasm_parse( ff, flags );
+    fclose( ff );
+    return ret;
+
+}
+
+
+int   qasm_parse( FILE* f, int flags ){
+    if( flags & QASM_VERBOSE ) qasm_verbose = 1; else qasm_verbose = 0;
+    if( qasm_verbose ) printf( "En modo verbose!\n" );
+#if YYDEBUG==1
+    if( flags & QASM_DEBUG ) yydebug = 1; else yydebug = 0;
+    if( qasm_verbose && yydebug ) printf( "En modo debug también (%d)\n", flags );
+#endif
+
+    qasmin = f;
+    qasm = qcode_new();
 
     if( yyparse() ){
         puts( "Salimos por error!" );
         return 0;
     }
     if( qasm_verbose )printf( "Total analizado: %d lineas\n", qasmlineno );
-    fclose( qasmin );
+    return 1;
 }
 

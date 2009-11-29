@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <string.h>
 #include "qasm.h"
 
 #define YYSTYPE long
@@ -116,20 +117,36 @@ command_list:  command      |
 
 %%
 
-int   qasm_parse( char* filename, int flags ){
-    if( flags | QASM_DEBUG ) yydebug = 1;
-    if( flags | QASM_VERBOSE ) qasm_verbose = 1;
-
-    qasmin = fopen( filename, "r" );
+int   qasm_parse_filename( char* filename, int flags ){
+    FILE* ff = fopen( filename, "r" );
+    int  ret;
     if( !qasmin ){
-        qasmprintf( "Error %s (%d) al abrir %s\n", strerror( errno ), errno, filename );
-        return NULL;
+        qasmprintf( "Error %d (%s) al abrir \"%s\"\n", errno, strerror( errno ), filename );
+        return 0;
     }
+
+    ret = qasm_parse( ff, flags );
+    fclose( ff );
+    return ret;
+
+}
+
+
+int   qasm_parse( FILE* f, int flags ){
+    if( flags & QASM_VERBOSE ) qasm_verbose = 1; else qasm_verbose = 0;
+    if( qasm_verbose ) printf( "En modo verbose!\n" );
+#if YYDEBUG==1
+    if( flags & QASM_DEBUG ) yydebug = 1; else yydebug = 0;
+    if( qasm_verbose && yydebug ) printf( "En modo debug también (%d)\n", flags );
+#endif
+
+    qasmin = f;
+    qasm = qcode_new();
 
     if( yyparse() ){
         puts( "Salimos por error!" );
         return 0;
     }
     if( qasm_verbose )printf( "Total analizado: %d lineas\n", qasmlineno );
-    fclose( qasmin );
+    return 1;
 }
