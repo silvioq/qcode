@@ -43,9 +43,10 @@
      TOK_NUM = 259,
      TOK_WRD = 260,
      TOK_INS = 261,
-     TOK_LAB = 262,
-     TOK_REG = 263,
-     TOK_TMP = 264
+     TOK_SEP = 262,
+     TOK_LAB = 263,
+     TOK_REG = 264,
+     TOK_TMP = 265
    };
 #endif
 /* Tokens.  */
@@ -53,9 +54,10 @@
 #define TOK_NUM 259
 #define TOK_WRD 260
 #define TOK_INS 261
-#define TOK_LAB 262
-#define TOK_REG 263
-#define TOK_TMP 264
+#define TOK_SEP 262
+#define TOK_LAB 263
+#define TOK_REG 264
+#define TOK_TMP 265
 
 
 

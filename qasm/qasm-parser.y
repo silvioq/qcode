@@ -61,7 +61,7 @@ unsigned char select_inst( unsigned char inst, int op1_type, int op2_type ){
 %}
 
 %token  TOK_STR  TOK_NUM  TOK_WRD
-%token  TOK_INS
+%token  TOK_INS  TOK_SEP
 %token  TOK_LAB  TOK_REG  TOK_TMP
 
 %start  command_list
@@ -83,13 +83,17 @@ reg_or_tmp:
 
 set_label:
      TOK_LAB   TOK_NUM {
+          qasmprintf( "Estableciendo etiqueta %s => %s", ((char*)$1), $2 );
           qcode_dcrlab_long( qasm, (char*)($1), $2 );
      } |
      TOK_LAB   TOK_STR {
+          qasmprintf( "Estableciendo etiqueta %s => %s", ((char*)$1), ((char*)$2) );
           qcode_dcrlab_str( qasm, (char*)($1), (char*)($2) );
      } |
      TOK_LAB   { 
-          qcode_crlab ( qasm, (char*)($1) );
+          qasmprintf( "Estableciendo etiqueta %s", ((char*)$1) );
+          int label = qcode_crlab ( qasm, ((char*)$1) );
+          qcode_label ( qasm, label );
      } 
      ;
 
@@ -107,18 +111,18 @@ instruction_op:
           int  label = qcode_dcrlab_str( qasm, unnamed_label, ((char*)($4)) );
           qcode_op( qasm, QCSTP, 0, label );
      } |
-     TOK_INS   reg_or_tmp  coma_o_blanco   TOK_WRD     {
-          qcode_op( qasm, select_inst( $1, TOK_REG, TOK_WRD ), $2, $4 ); 
-     } |
      TOK_INS   TOK_WRD     coma_o_blanco   reg_or_tmp  {
           qcode_op( qasm, select_inst( $1, TOK_WRD, TOK_REG ), $4, $2 ); 
-     } 
+     } |
+     TOK_INS   reg_or_tmp {
+          qcode_op( qasm, $1, $2, 0 );
+     }
      
      ;
     
 instruction_call:
      TOK_INS   TOK_WRD   {
-          qcode_opnlab( qasm, $1, (char*)($2) );
+          qcode_opnlab( qasm, $1, ((char*)$2) );
      }
      ;
 
@@ -135,13 +139,13 @@ instruction:
      instruction_ret                  ;
 
 
-command:
+command:  |
       set_label     |
       instruction    ;
 
 
-command_list:  command      |
-               command_list command ;
+command_list:                 command      |
+               command_list TOK_SEP command  ;
   
 
 

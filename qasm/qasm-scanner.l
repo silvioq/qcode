@@ -80,9 +80,10 @@ r{NUM}          { int i = atoi( yytext + 1 );
                 }
 <string>\"      { BEGIN(INITIAL); }
 
-[ \n\t\r]+      /* ignore whitespace */
+[ \t\r]+        /* ignore whitespace */
 \#[^\n]*        /* ignora comentario */
 ;[^\n]*         /* ignora comentario */
+\n              { return  TOK_SEP; }
 .               { return (int) yytext[0]; }
 
 

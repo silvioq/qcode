@@ -7,7 +7,9 @@
 
 
 long  printf_de_i( QCodeVM* vm ){
-    printf( "%d ", (int) qcode_pop( vm ) );
+    int x = (int) qcode_pop( vm );
+    printf( "%d ", x );
+    assert( x < 200 );
     return 0;
 }
 
