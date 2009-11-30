@@ -12,3 +12,7 @@ AM_YFLAGS = -d -p qasm
 AM_LFLAGS = --prefix qasm -o lex.yy.c
 AM_CFLAGS = -I$(top_srcdir)/src
 
+
+TESTS_ENVIRONMENT = $(builddir)/qasm -vr
+TESTS = test/*.qasm
+

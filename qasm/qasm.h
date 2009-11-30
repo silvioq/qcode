@@ -6,13 +6,18 @@
  *
  * */
 
+/*
+ * Caracteristicas del lenguaje:
+ *
+ * */
+
 
 #ifndef  QASM_H
 #define  QASM_H  1
 
 #include <stdio.h>
 
-QCode*  qasm;
+extern  QCode*  qasm;
 
 #define  QASM_DEBUG    1
 #define  QASM_VERBOSE  2

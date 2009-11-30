@@ -26,16 +26,12 @@ NUM     [0-9]+
 
 
 ^{WORD}\:       { qasmlval = (long)strdup(yytext); 
-                  ((char*)qasmlval)[yyleng - 1] = 0;
+                  ((char*)(long)qasmlval)[yyleng - 1] = 0;
                   return  TOK_LAB; 
                 }
 
 nop             { qasmlval = QCNOP; return TOK_INS; }
 sto             { qasmlval = QCSTO; return TOK_INS; }
-sti             { qasmlval = QCSTI; return TOK_INS; }
-stp             { qasmlval = QCSTP; return TOK_INS; }
-stm             { qasmlval = QCSTM; return TOK_INS; }
-std             { qasmlval = QCSTD; return TOK_INS; }
 add             { qasmlval = QCADD; return TOK_INS; }
 sub             { qasmlval = QCSUB; return TOK_INS; }
 inc             { qasmlval = QCINC; return TOK_INS; }
@@ -75,7 +71,7 @@ r{NUM}          { int i = atoi( yytext + 1 );
                 }
 
 {WORD}          { qasmlval = (long)strdup(yytext); 
-                  return  TOK_LAB; 
+                  return  TOK_WRD; 
                 }
 
 \"              { BEGIN(string); }
@@ -84,10 +80,10 @@ r{NUM}          { int i = atoi( yytext + 1 );
                 }
 <string>\"      { BEGIN(INITIAL); }
 
-[ \n\t\r]+      /* ignore whitespace */;
+[ \n\t\r]+      /* ignore whitespace */
 \#[^\n]*        /* ignora comentario */
 ;[^\n]*         /* ignora comentario */
-.               printf( "%c => caracter no esperado\n", yytext[0] );
+.               { return (int) yytext[0]; }
 
 
 %%

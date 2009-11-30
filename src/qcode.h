@@ -15,12 +15,53 @@
  * TODO: Hacer un dump legible
  */
 
+/*
+ * NOP: No operacion
+ * */
 #define  QCNOP     0
+
+
+/* 
+ * STO: Mueve el valor del origen al destino
+ * Ejemplo:
+ *    STO  1, 3   (pone el valor del registro 3 en el registro 1)
+ *    STO  1, 16  (pone el valor del temporal 16 en el registro 1)
+ * */
 #define  QCSTO     1
+
+
+/*
+ * STI: Guarda un numero entero dentro del detino
+ * Ejemplo:
+ *    STI  1, 3   (pone el valor 3 al registro 1)
+ * */
 #define  QCSTI     2
+
+/*
+ * STP: Pone el valor que esta en el registro o
+ *      temporal que es el origen en el puntero destino
+ * Ejemplo:
+ *    STP  1, pointer  (pone el valor del registro 1 en
+ *                      el puntero pointer)
+ * */
 #define  QCSTP     3
+
+
+/*
+ * STM: Pone el valor del puntero de memoria en el destino
+ * Ejemplo:
+ *    STM  16, pointer  (pone el valor entero que hay en el puntero
+ *                       pointer en el temporal 16 )
+ * */
 #define  QCSTM     4
+
+/* 
+ * STD: Pone el valor del dato (puntero estatico) en el registro
+ * */
+
 #define  QCSTD     5
+
+
 #define  QCADD     6
 #define  QCSUB     7
 #define  QCINC     8

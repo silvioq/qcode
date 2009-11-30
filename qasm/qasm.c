@@ -16,11 +16,12 @@
 #include "qasm-parser.h"
 #include "qasm.h"
 
+QCode*  qasm = NULL;
 
 void usage(char* prg){
 
    puts( "Uso:" );
-   printf( "  %s [-d] [-v] [filename.qasm]\n", prg );
+   printf( "  %s [-d] [-v] [-r] [filename.qasm]\n", prg );
    exit( EXIT_FAILURE );
    
 }
@@ -30,16 +31,20 @@ int  main(int argc, char** argv) {
 
         int  flags = 0;
         int  opt = 0;
+        int  run_program  = 0;
         int  ret;
         char* filename;
 
-        while ((opt = getopt(argc, argv, "dv")) != -1){
+        while ((opt = getopt(argc, argv, "rdv")) != -1){
             switch(opt){
                 case 'd':
                     flags |= QASM_DEBUG;
                     break;
                 case 'v':
                     flags |= QASM_VERBOSE;
+                    break;
+                case 'r':
+                    run_program = 1;
                     break;
                 default:
                     usage( argv[0] );
@@ -50,9 +55,18 @@ int  main(int argc, char** argv) {
             ret = qasm_parse( stdin, flags );
         else{
             filename = argv[optind];
+            if( flags & QASM_VERBOSE ) printf( "Abriendo %s\n", filename );
             ret = qasm_parse_filename( filename, flags );
         }
 
-        return ret ? EXIT_SUCCESS : EXIT_FAILURE;
+        if( run_program && ret && qasm ){
+           qcode_run( qasm, &ret );
+           if( flags & QASM_VERBOSE ) printf( "Retorno de ejecucion: %d\n", ret );
+        }
+
+        if( qasm ) qcode_free( qasm );
+
+        return ret;
+
 
 } 

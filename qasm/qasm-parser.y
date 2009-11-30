@@ -40,9 +40,27 @@ void  qasmprintf( char* format, ... ){
   va_end( a );
 }
 
+
+unsigned char select_inst( unsigned char inst, int op1_type, int op2_type ){
+
+    if( inst != QCSTO ) return inst;
+    if( op1_type == TOK_REG && op2_type == TOK_REG ) return QCSTO;
+    if( op1_type == TOK_REG && op2_type == TOK_NUM ) return QCSTI;
+    if( op1_type == TOK_REG && op2_type == TOK_STR ) { 
+       yyerror( "Error interno (TOK_REG = TOK_STR)" ); return QCNOP;
+    }
+    if( op1_type == TOK_REG && op2_type == TOK_WRD ) return QCSTP;
+    if( op1_type == TOK_WRD && op2_type == TOK_REG ) return QCSTM;
+    
+    yyerror( "Error interno" ); return QCNOP;
+
+}
+
+
+
 %}
 
-%token  TOK_STR  TOK_NUM
+%token  TOK_STR  TOK_NUM  TOK_WRD
 %token  TOK_INS
 %token  TOK_LAB  TOK_REG  TOK_TMP
 
@@ -54,6 +72,13 @@ void  qasmprintf( char* format, ... ){
 
 
 %%
+
+coma_o_blanco:
+    ',' | ;
+
+
+reg_or_tmp:
+    TOK_REG  { $$ = $1 ; } | TOK_TMP  { $$ = $1; };
 
 
 set_label:
@@ -69,16 +94,30 @@ set_label:
      ;
 
 instruction_op:
-     TOK_INS   TOK_REG  ','  TOK_TMP  {
-          qcode_op( qasm, $1, $2, $4 ); 
+     TOK_INS   reg_or_tmp  coma_o_blanco   reg_or_tmp  {
+          qcode_op( qasm, select_inst( $1, TOK_REG, TOK_REG ), $2, $4 ); 
      } |
-     TOK_INS   TOK_TMP  ','  TOK_REG  {
-          qcode_op( qasm, $1, $2, $4 ); 
+     TOK_INS   reg_or_tmp  coma_o_blanco   TOK_WRD     {
+          qcode_op( qasm, select_inst( $1, TOK_REG, TOK_WRD ), $2, $4 ); 
+     } |
+     TOK_INS   reg_or_tmp  coma_o_blanco   TOK_NUM     {
+          qcode_op( qasm, select_inst( $1, TOK_REG, TOK_NUM ), $2, $4 ); 
+     } |
+     TOK_INS   reg_or_tmp  coma_o_blanco   TOK_STR     {
+          int  label = qcode_dcrlab_str( qasm, unnamed_label, ((char*)($4)) );
+          qcode_op( qasm, QCSTP, 0, label );
+     } |
+     TOK_INS   reg_or_tmp  coma_o_blanco   TOK_WRD     {
+          qcode_op( qasm, select_inst( $1, TOK_REG, TOK_WRD ), $2, $4 ); 
+     } |
+     TOK_INS   TOK_WRD     coma_o_blanco   reg_or_tmp  {
+          qcode_op( qasm, select_inst( $1, TOK_WRD, TOK_REG ), $4, $2 ); 
      } 
+     
      ;
     
 instruction_call:
-     TOK_INS   TOK_LAB   {
+     TOK_INS   TOK_WRD   {
           qcode_opnlab( qasm, $1, (char*)($2) );
      }
      ;
@@ -120,7 +159,7 @@ command_list:  command      |
 int   qasm_parse_filename( char* filename, int flags ){
     FILE* ff = fopen( filename, "r" );
     int  ret;
-    if( !qasmin ){
+    if( !ff ){
         qasmprintf( "Error %d (%s) al abrir \"%s\"\n", errno, strerror( errno ), filename );
         return 0;
     }

@@ -41,19 +41,21 @@
    enum yytokentype {
      TOK_STR = 258,
      TOK_NUM = 259,
-     TOK_INS = 260,
-     TOK_LAB = 261,
-     TOK_REG = 262,
-     TOK_TMP = 263
+     TOK_WRD = 260,
+     TOK_INS = 261,
+     TOK_LAB = 262,
+     TOK_REG = 263,
+     TOK_TMP = 264
    };
 #endif
 /* Tokens.  */
 #define TOK_STR 258
 #define TOK_NUM 259
-#define TOK_INS 260
-#define TOK_LAB 261
-#define TOK_REG 262
-#define TOK_TMP 263
+#define TOK_WRD 260
+#define TOK_INS 261
+#define TOK_LAB 262
+#define TOK_REG 263
+#define TOK_TMP 264
 
 
 

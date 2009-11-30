@@ -76,19 +76,21 @@
    enum yytokentype {
      TOK_STR = 258,
      TOK_NUM = 259,
-     TOK_INS = 260,
-     TOK_LAB = 261,
-     TOK_REG = 262,
-     TOK_TMP = 263
+     TOK_WRD = 260,
+     TOK_INS = 261,
+     TOK_LAB = 262,
+     TOK_REG = 263,
+     TOK_TMP = 264
    };
 #endif
 /* Tokens.  */
 #define TOK_STR 258
 #define TOK_NUM 259
-#define TOK_INS 260
-#define TOK_LAB 261
-#define TOK_REG 262
-#define TOK_TMP 263
+#define TOK_WRD 260
+#define TOK_INS 261
+#define TOK_LAB 262
+#define TOK_REG 263
+#define TOK_TMP 264
 
 
 
@@ -138,6 +140,24 @@ void  qasmprintf( char* format, ... ){
 }
 
 
+unsigned char select_inst( unsigned char inst, int op1_type, int op2_type ){
+
+    if( inst != QCSTO ) return inst;
+    if( op1_type == TOK_REG && op2_type == TOK_REG ) return QCSTO;
+    if( op1_type == TOK_REG && op2_type == TOK_NUM ) return QCSTI;
+    if( op1_type == TOK_REG && op2_type == TOK_STR ) { 
+       yyerror( "Error interno (TOK_REG = TOK_STR)" ); return QCNOP;
+    }
+    if( op1_type == TOK_REG && op2_type == TOK_WRD ) return QCSTP;
+    if( op1_type == TOK_WRD && op2_type == TOK_REG ) return QCSTM;
+    
+    yyerror( "Error interno" ); return QCNOP;
+
+}
+
+
+
+
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -170,7 +190,7 @@ typedef int YYSTYPE;
 
 
 /* Line 216 of yacc.c.  */
-#line 174 "qasm-parser.c"
+#line 194 "qasm-parser.c"
 
 #ifdef short
 # undef short
@@ -383,22 +403,22 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  15
+#define YYFINAL  16
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   17
+#define YYLAST   24
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  10
+#define YYNTOKENS  11
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  8
+#define YYNNTS  10
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  15
+#define YYNRULES  23
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  21
+#define YYNSTATES  26
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   263
+#define YYMAXUTOK   264
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -410,7 +430,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     9,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,    10,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -432,7 +452,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8
+       5,     6,     7,     8,     9
 };
 
 #if YYDEBUG
@@ -440,25 +460,29 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     6,     9,    11,    16,    21,    24,    26,
-      28,    30,    32,    34,    36,    38
+       0,     0,     3,     5,     6,     8,    10,    13,    16,    18,
+      23,    28,    33,    38,    43,    48,    51,    53,    55,    57,
+      59,    61,    63,    65
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      17,     0,    -1,     6,     4,    -1,     6,     3,    -1,     6,
-      -1,     5,     7,     9,     8,    -1,     5,     8,     9,     7,
-      -1,     5,     6,    -1,     5,    -1,    12,    -1,    13,    -1,
-      14,    -1,    11,    -1,    15,    -1,    16,    -1,    17,    16,
-      -1
+      20,     0,    -1,    10,    -1,    -1,     8,    -1,     9,    -1,
+       7,     4,    -1,     7,     3,    -1,     7,    -1,     6,    13,
+      12,    13,    -1,     6,    13,    12,     5,    -1,     6,    13,
+      12,     4,    -1,     6,    13,    12,     3,    -1,     6,    13,
+      12,     5,    -1,     6,     5,    12,    13,    -1,     6,     5,
+      -1,     6,    -1,    15,    -1,    16,    -1,    17,    -1,    14,
+      -1,    18,    -1,    19,    -1,    20,    19,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    60,    60,    63,    66,    72,    75,    81,    88,    94,
-      95,    96,   100,   101,   104,   105
+       0,    77,    77,    77,    81,    81,    85,    88,    91,    97,
+     100,   103,   106,   110,   113,   120,   127,   133,   134,   135,
+     139,   140,   143,   144
 };
 #endif
 
@@ -467,10 +491,11 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "TOK_STR", "TOK_NUM", "TOK_INS",
-  "TOK_LAB", "TOK_REG", "TOK_TMP", "','", "$accept", "set_label",
-  "instruction_op", "instruction_call", "instruction_ret", "instruction",
-  "command", "command_list", 0
+  "$end", "error", "$undefined", "TOK_STR", "TOK_NUM", "TOK_WRD",
+  "TOK_INS", "TOK_LAB", "TOK_REG", "TOK_TMP", "','", "$accept",
+  "coma_o_blanco", "reg_or_tmp", "set_label", "instruction_op",
+  "instruction_call", "instruction_ret", "instruction", "command",
+  "command_list", 0
 };
 #endif
 
@@ -479,22 +504,25 @@ static const char *const yytname[] =
    token YYLEX-NUM.  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262,   263,    44
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
+      44
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    10,    11,    11,    11,    12,    12,    13,    14,    15,
-      15,    15,    16,    16,    17,    17
+       0,    11,    12,    12,    13,    13,    14,    14,    14,    15,
+      15,    15,    15,    15,    15,    16,    17,    18,    18,    18,
+      19,    19,    20,    20
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     2,     1,     4,     4,     2,     1,     1,
-       1,     1,     1,     1,     1,     2
+       0,     2,     1,     0,     1,     1,     2,     2,     1,     4,
+       4,     4,     4,     4,     4,     2,     1,     1,     1,     1,
+       1,     1,     1,     2
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -502,57 +530,59 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     8,     4,    12,     9,    10,    11,    13,    14,     0,
-       7,     0,     0,     3,     2,     1,    15,     0,     0,     5,
-       6
+       0,    16,     8,    20,    17,    18,    19,    21,    22,     0,
+      15,     4,     5,     3,     7,     6,     1,    23,     2,     0,
+       0,    14,    12,    11,    10,     9
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     3,     4,     5,     6,     7,     8,     9
+      -1,    19,    13,     3,     4,     5,     6,     7,     8,     9
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -6
+#define YYPACT_NINF -5
 static const yytype_int8 yypact[] =
 {
-       2,    -5,     6,    -6,    -6,    -6,    -6,    -6,    -6,     0,
-      -6,     3,     4,    -6,    -6,    -6,    -6,    -4,     7,    -6,
-      -6
+      12,    -4,    -1,    -5,    -5,    -5,    -5,    -5,    -5,     0,
+       7,    -5,    -5,    13,    -5,    -5,    -5,    -5,    -5,     3,
+       5,    -5,    -5,    -5,    -5,    -5
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    -6,    -6,    -6,    -6,     8,    -6
+      -5,     9,     1,    -5,    -5,    -5,    -5,    -5,    15,    -5
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule which
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
-#define YYTABLE_NINF -1
-static const yytype_uint8 yytable[] =
+#define YYTABLE_NINF -4
+static const yytype_int8 yytable[] =
 {
-      15,    10,    11,    12,    19,     1,     2,     1,     2,    13,
-      14,     0,    17,    18,    20,     0,     0,    16
+      16,    10,    14,    15,    11,    12,     1,     2,    22,    23,
+      24,    11,    12,    11,    12,    -3,    -3,    18,     1,     2,
+      21,    25,    20,    18,    17
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-       0,     6,     7,     8,     8,     5,     6,     5,     6,     3,
-       4,    -1,     9,     9,     7,    -1,    -1,     9
+       0,     5,     3,     4,     8,     9,     6,     7,     3,     4,
+       5,     8,     9,     8,     9,     8,     9,    10,     6,     7,
+      19,    20,    13,    10,     9
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     5,     6,    11,    12,    13,    14,    15,    16,    17,
-       6,     7,     8,     3,     4,     0,    16,     9,     9,     8,
-       7
+       0,     6,     7,    14,    15,    16,    17,    18,    19,    20,
+       5,     8,     9,    13,     3,     4,     0,    19,    10,    12,
+      12,    13,     3,     4,     5,    13
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1366,50 +1396,89 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 2:
-#line 60 "qasm-parser.y"
+        case 4:
+#line 81 "qasm-parser.y"
+    { (yyval) = (yyvsp[(1) - (1)]) ; }
+    break;
+
+  case 5:
+#line 81 "qasm-parser.y"
+    { (yyval) = (yyvsp[(1) - (1)]); }
+    break;
+
+  case 6:
+#line 85 "qasm-parser.y"
     {
           qcode_dcrlab_long( qasm, (char*)((yyvsp[(1) - (2)])), (yyvsp[(2) - (2)]) );
      }
     break;
 
-  case 3:
-#line 63 "qasm-parser.y"
+  case 7:
+#line 88 "qasm-parser.y"
     {
           qcode_dcrlab_str( qasm, (char*)((yyvsp[(1) - (2)])), (char*)((yyvsp[(2) - (2)])) );
      }
     break;
 
-  case 4:
-#line 66 "qasm-parser.y"
+  case 8:
+#line 91 "qasm-parser.y"
     { 
           qcode_crlab ( qasm, (char*)((yyvsp[(1) - (1)])) );
      }
     break;
 
-  case 5:
-#line 72 "qasm-parser.y"
+  case 9:
+#line 97 "qasm-parser.y"
     {
-          qcode_op( qasm, (yyvsp[(1) - (4)]), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
+          qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_REG, TOK_REG ), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
      }
     break;
 
-  case 6:
-#line 75 "qasm-parser.y"
+  case 10:
+#line 100 "qasm-parser.y"
     {
-          qcode_op( qasm, (yyvsp[(1) - (4)]), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
+          qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_REG, TOK_WRD ), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
      }
     break;
 
-  case 7:
-#line 81 "qasm-parser.y"
+  case 11:
+#line 103 "qasm-parser.y"
+    {
+          qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_REG, TOK_NUM ), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
+     }
+    break;
+
+  case 12:
+#line 106 "qasm-parser.y"
+    {
+          int  label = qcode_dcrlab_str( qasm, unnamed_label, ((char*)((yyvsp[(4) - (4)]))) );
+          qcode_op( qasm, QCSTP, 0, label );
+     }
+    break;
+
+  case 13:
+#line 110 "qasm-parser.y"
+    {
+          qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_REG, TOK_WRD ), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
+     }
+    break;
+
+  case 14:
+#line 113 "qasm-parser.y"
+    {
+          qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_WRD, TOK_REG ), (yyvsp[(4) - (4)]), (yyvsp[(2) - (4)]) ); 
+     }
+    break;
+
+  case 15:
+#line 120 "qasm-parser.y"
     {
           qcode_opnlab( qasm, (yyvsp[(1) - (2)]), (char*)((yyvsp[(2) - (2)])) );
      }
     break;
 
-  case 8:
-#line 88 "qasm-parser.y"
+  case 16:
+#line 127 "qasm-parser.y"
     { 
           qcode_op( qasm, (yyvsp[(1) - (1)]), 0, 0 );
      }
@@ -1417,7 +1486,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1421 "qasm-parser.c"
+#line 1490 "qasm-parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1631,13 +1700,13 @@ yyreturn:
 }
 
 
-#line 118 "qasm-parser.y"
+#line 157 "qasm-parser.y"
 
 
 int   qasm_parse_filename( char* filename, int flags ){
     FILE* ff = fopen( filename, "r" );
     int  ret;
-    if( !qasmin ){
+    if( !ff ){
         qasmprintf( "Error %d (%s) al abrir \"%s\"\n", errno, strerror( errno ), filename );
         return 0;
     }
