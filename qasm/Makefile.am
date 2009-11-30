@@ -16,3 +16,5 @@ AM_CFLAGS = -I$(top_srcdir)/src
 TESTS_ENVIRONMENT = $(builddir)/qasm -vr
 TESTS = test/*.qasm
 
+EXTRA_DIST = test/*.qasm
+
