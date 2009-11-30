@@ -1,0 +1,34 @@
+
+QASM
+====
+
+QASM es un sencillo pseudo lenguaje ensamblador que utiliza qcode como maquina virtual
+
+Generalidades
+-------------
+En esta seccion se incluyen tambien caracteristicas propias del qcode.
+
+El qcode cuenta con un juego de 16 registros y 256 - 16 variables temporales.
+
+Los registros se representan en el qasm de la forma rn, donde n es el numero de registro, que varia entre 0 y 15. Como es de esperar, las variables temporales son de la forma tn, donde n varia entre 0 y 240. En la implementacion del qasm, se estipula el tipo de variable, y se convierte al valor esperado por el qcode.
+
+El registro 0 (r0) tiene un comportamiento especial, ya que es el receptaculo de todas las operaciones y es el retorno de todas las funciones, incluso, cuando es terminado el programa, el valor devuelto es aquel que contenga r0.
+
+
+Juego de instrucciones
+----------------------
+
+NOP: 
+No operacion
+
+STO: 
+Asignacion de valor
+
+Forma  sto destino, valor.
+
+El "sto" tiene un funcionamiento particular, ya que, dependiendo de los parametros, adopta la instrucción qcode correspondiente ... QCSTO, QCSTI, QCSTD o QCSTM
+
+JMP:
+Salto absoluto
+
+
