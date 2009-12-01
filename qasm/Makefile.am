@@ -1,7 +1,7 @@
 
 bin_PROGRAMS = qasm
 
-qasm_SOURCES = qasm.c qasm-parser.y qasm-scanner.l
+qasm_SOURCES = qasm.c qasm-parser.y qasm-scanner.l qasm.h
 qasm_LDADD = $(top_builddir)/src/libqcode.la
 qasm_DEPENDENCIES = $(top_builddir)/src/libqcode.la
 

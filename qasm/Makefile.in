@@ -34,7 +34,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = qasm$(EXEEXT)
 subdir = qasm
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in TODO \
 	qasm-parser.c qasm-parser.h qasm-scanner.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -186,7 +186,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-qasm_SOURCES = qasm.c qasm-parser.y qasm-scanner.l
+qasm_SOURCES = qasm.c qasm-parser.y qasm-scanner.l qasm.h
 qasm_LDADD = $(top_builddir)/src/libqcode.la
 qasm_DEPENDENCIES = $(top_builddir)/src/libqcode.la
 AM_YFLAGS = -d -p qasm
