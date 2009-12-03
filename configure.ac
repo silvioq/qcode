@@ -8,7 +8,7 @@ AC_PROG_LIBTOOL
 AC_CONFIG_HEADERS([config.h])
 
 AC_ARG_ENABLE([qasm],
-[  --enable-qasm    Create QAsm],
+[  --disable-qasm          Disable qasm generation],
 [case  "${enableval}"  in 
   yes)  qasm=true ;;
   no)   qasm=false ;;
