@@ -42,22 +42,24 @@
      TOK_STR = 258,
      TOK_NUM = 259,
      TOK_WRD = 260,
-     TOK_INS = 261,
-     TOK_SEP = 262,
-     TOK_LAB = 263,
-     TOK_REG = 264,
-     TOK_TMP = 265
+     TOK_PTR = 261,
+     TOK_INS = 262,
+     TOK_SEP = 263,
+     TOK_LAB = 264,
+     TOK_REG = 265,
+     TOK_TMP = 266
    };
 #endif
 /* Tokens.  */
 #define TOK_STR 258
 #define TOK_NUM 259
 #define TOK_WRD 260
-#define TOK_INS 261
-#define TOK_SEP 262
-#define TOK_LAB 263
-#define TOK_REG 264
-#define TOK_TMP 265
+#define TOK_PTR 261
+#define TOK_INS 262
+#define TOK_SEP 263
+#define TOK_LAB 264
+#define TOK_REG 265
+#define TOK_TMP 266
 
 
 

@@ -49,7 +49,9 @@ unsigned char select_inst( unsigned char inst, int op1_type, int op2_type ){
     if( op1_type == TOK_REG && op2_type == TOK_STR ) { 
        yyerror( "Error interno (TOK_REG = TOK_STR)" ); return QCNOP;
     }
-    if( op1_type == TOK_REG && op2_type == TOK_WRD ) return QCSTM;
+    if( op1_type == TOK_REG && op2_type == TOK_WRD ) return QCSTP;
+    if( op1_type == TOK_REG && op2_type == TOK_PTR ) return QCSTM;
+    if( op1_type == TOK_PTR && op2_type == TOK_REG ) return QCSTD;
     if( op1_type == TOK_WRD && op2_type == TOK_REG ) return QCSTD;
     
     yyerror( "Error interno" ); return QCNOP;
@@ -60,7 +62,7 @@ unsigned char select_inst( unsigned char inst, int op1_type, int op2_type ){
 
 %}
 
-%token  TOK_STR  TOK_NUM  TOK_WRD
+%token  TOK_STR  TOK_NUM  TOK_WRD  TOK_PTR
 %token  TOK_INS  TOK_SEP
 %token  TOK_LAB  TOK_REG  TOK_TMP
 
@@ -107,12 +109,21 @@ instruction_op:
           if( !label ) yyerror( "Etiqueta inexistente" );
           qcode_op( qasm, select_inst( $1, TOK_REG, TOK_WRD ), $2, label ); 
      } |
+     TOK_INS   reg_or_tmp  coma_o_blanco   TOK_PTR     {
+          qasmprintf( "Usando etiqueta => & %s", ((char*)$4) );
+          int label = qcode_slab( qasm, ((char*)$4) );
+          if( !label ) yyerror( "Etiqueta inexistente" );
+          qcode_op( qasm, select_inst( $1, TOK_REG, TOK_PTR ), $2, label ); 
+     } |
      TOK_INS   reg_or_tmp  coma_o_blanco   TOK_NUM     {
           qcode_op( qasm, select_inst( $1, TOK_REG, TOK_NUM ), $2, $4 ); 
      } |
      TOK_INS   reg_or_tmp  coma_o_blanco   TOK_STR     {
           int  label = qcode_dcrlab_str( qasm, unnamed_label, ((char*)($4)) );
           qcode_op( qasm, QCSTP, 0, label );
+     } |
+     TOK_INS   TOK_PTR     coma_o_blanco   reg_or_tmp  {
+          qcode_op( qasm, select_inst( $1, TOK_PTR, TOK_REG ), $4, $2 ); 
      } |
      TOK_INS   TOK_WRD     coma_o_blanco   reg_or_tmp  {
           qcode_op( qasm, select_inst( $1, TOK_WRD, TOK_REG ), $4, $2 ); 

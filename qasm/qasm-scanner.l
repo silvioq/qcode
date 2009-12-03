@@ -70,6 +70,10 @@ r{NUM}          { int i = atoi( yytext + 1 );
                   return  TOK_NUM;
                 }
 
+\&{WORD}        { qasmlval = (long)strdup(yytext + 1); 
+                  return  TOK_PTR; 
+                }
+
 {WORD}          { qasmlval = (long)strdup(yytext); 
                   return  TOK_WRD; 
                 }
