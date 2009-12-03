@@ -214,6 +214,19 @@ int       qcode_dcrlab_str( QCode* qcode, char* label_name, char* data ){
 }
 
 /*
+ * Esta funcion retorna el numero de etiqueta nombrada.
+ * Si no existe la etiqueta, retonra 0
+ * */
+
+int       qcode_slab  ( QCode* qcode, char* label_name ){
+    int  numlab;
+    assert( label_name != unnamed_label );
+    NUMLABEL( numlab, label_name );
+    QCodeLab* l = qcode_search_label( qcode, numlab );
+    return( l ? numlab : 0 );
+}
+
+/*
  *
  * Esta funcion interna me permite crear una etiqueta 
  * en forma generica
@@ -231,7 +244,6 @@ QCodeLab*  qcode_new_label(QCode* qcode, char* label_name ){
         assert( qcode->lab_list  = REALLOC( qcode->lab_list, sizeof( QCodeLab ) * qcode->lab_alloc ) );
     }
 
-    l = &(qcode->lab_list[qcode->lab_count++]);
 
     // Obtengo numero de etiqueta
     if( label_name == unnamed_label ){
@@ -239,6 +251,7 @@ QCodeLab*  qcode_new_label(QCode* qcode, char* label_name ){
     } else {
         NUMLABEL( numlab, label_name );
     }
+    l = &(qcode->lab_list[qcode->lab_count++]);
 
     memset( l, 0, sizeof( QCodeLab ) );
     l->lab  = numlab;

@@ -254,6 +254,9 @@ int       qcode_dcrlab( QCode* qcode, char* label_name, void*  data, int size );
 int       qcode_dcrlab_long( QCode* qcode, char* label_name, long data );
 int       qcode_dcrlab_str( QCode* qcode, char* label_name, char* data );
 
+// Busqueda de etiqueta
+int       qcode_slab  ( QCode* qcode, char* label_name );
+
 // Establece la etiqueta para el cacho de codigo en la posicion actual
 // del programa
 void      qcode_label ( QCode* qcode, int   label );
