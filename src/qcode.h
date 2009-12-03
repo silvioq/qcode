@@ -38,11 +38,10 @@
 #define  QCSTI     2
 
 /*
- * STP: Pone el valor que esta en el registro o
- *      temporal que es el origen en el puntero destino
+ * STP: Pone el puntero (el valor del mismo, no lo que contiene)
+ *      en el registro o temporal
  * Ejemplo:
- *    STP  1, pointer  (pone el valor del registro 1 en
- *                      el puntero pointer)
+ *    STP  1, pointer  (pone el valor del puntero en el registro 1 )
  * */
 #define  QCSTP     3
 
@@ -50,15 +49,17 @@
 /*
  * STM: Pone el valor del puntero de memoria en el destino
  * Ejemplo:
- *    STM  16, pointer  (pone el valor entero que hay en el puntero
- *                       pointer en el temporal 16 )
+ *    STM  16, &pointer  (pone el valor entero que hay en el puntero
+ *                        pointer en el temporal 16 )
  * */
 #define  QCSTM     4
 
 /* 
- * STD: Pone el valor del dato (puntero estatico) en el registro
+ * STD: Pone el valor del registro o temporal en el puntero
+ * Ejemplo:
+ *    STD 1, pointer     (Seria *pointer = 1)
+ *
  * */
-
 #define  QCSTD     5
 
 
