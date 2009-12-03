@@ -150,8 +150,8 @@ unsigned char select_inst( unsigned char inst, int op1_type, int op2_type ){
     if( op1_type == TOK_REG && op2_type == TOK_STR ) { 
        yyerror( "Error interno (TOK_REG = TOK_STR)" ); return QCNOP;
     }
-    if( op1_type == TOK_REG && op2_type == TOK_WRD ) return QCSTP;
-    if( op1_type == TOK_WRD && op2_type == TOK_REG ) return QCSTM;
+    if( op1_type == TOK_REG && op2_type == TOK_WRD ) return QCSTM;
+    if( op1_type == TOK_WRD && op2_type == TOK_REG ) return QCSTD;
     
     yyerror( "Error interno" ); return QCNOP;
 
@@ -483,8 +483,8 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    77,    77,    77,    81,    81,    85,    89,    93,   101,
-     104,   107,   110,   114,   117,   124,   131,   137,   138,   139,
-     142,   143,   144,   147,   148
+     104,   110,   113,   117,   120,   127,   135,   141,   142,   143,
+     146,   147,   148,   151,   152
 };
 #endif
 
@@ -1411,7 +1411,7 @@ yyreduce:
   case 6:
 #line 85 "qasm-parser.y"
     {
-          qasmprintf( "Estableciendo etiqueta %s => %s", ((char*)(yyvsp[(1) - (2)])), (yyvsp[(2) - (2)]) );
+          qasmprintf( "Estableciendo etiqueta %s => %d", ((char*)(yyvsp[(1) - (2)])), (yyvsp[(2) - (2)]) );
           qcode_dcrlab_long( qasm, (char*)((yyvsp[(1) - (2)])), (yyvsp[(2) - (2)]) );
      }
     break;
@@ -1443,19 +1443,22 @@ yyreduce:
   case 10:
 #line 104 "qasm-parser.y"
     {
-          qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_REG, TOK_WRD ), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
+          qasmprintf( "Usando etiqueta => %s", ((char*)(yyvsp[(4) - (4)])) );
+          int label = qcode_slab( qasm, ((char*)(yyvsp[(4) - (4)])) );
+          if( !label ) yyerror( "Etiqueta inexistente" );
+          qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_REG, TOK_WRD ), (yyvsp[(2) - (4)]), label ); 
      }
     break;
 
   case 11:
-#line 107 "qasm-parser.y"
+#line 110 "qasm-parser.y"
     {
           qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_REG, TOK_NUM ), (yyvsp[(2) - (4)]), (yyvsp[(4) - (4)]) ); 
      }
     break;
 
   case 12:
-#line 110 "qasm-parser.y"
+#line 113 "qasm-parser.y"
     {
           int  label = qcode_dcrlab_str( qasm, unnamed_label, ((char*)((yyvsp[(4) - (4)]))) );
           qcode_op( qasm, QCSTP, 0, label );
@@ -1463,28 +1466,29 @@ yyreduce:
     break;
 
   case 13:
-#line 114 "qasm-parser.y"
+#line 117 "qasm-parser.y"
     {
           qcode_op( qasm, select_inst( (yyvsp[(1) - (4)]), TOK_WRD, TOK_REG ), (yyvsp[(4) - (4)]), (yyvsp[(2) - (4)]) ); 
      }
     break;
 
   case 14:
-#line 117 "qasm-parser.y"
+#line 120 "qasm-parser.y"
     {
           qcode_op( qasm, (yyvsp[(1) - (2)]), (yyvsp[(2) - (2)]), 0 );
      }
     break;
 
   case 15:
-#line 124 "qasm-parser.y"
+#line 127 "qasm-parser.y"
     {
+          qasmprintf( "Llamando etiqueta %s", ((char*)(yyvsp[(2) - (2)])) );
           qcode_opnlab( qasm, (yyvsp[(1) - (2)]), ((char*)(yyvsp[(2) - (2)])) );
      }
     break;
 
   case 16:
-#line 131 "qasm-parser.y"
+#line 135 "qasm-parser.y"
     { 
           qcode_op( qasm, (yyvsp[(1) - (1)]), 0, 0 );
      }
@@ -1492,7 +1496,7 @@ yyreduce:
 
 
 /* Line 1267 of yacc.c.  */
-#line 1496 "qasm-parser.c"
+#line 1500 "qasm-parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1706,7 +1710,7 @@ yyreturn:
 }
 
 
-#line 161 "qasm-parser.y"
+#line 165 "qasm-parser.y"
 
 
 int   qasm_parse_filename( char* filename, int flags ){

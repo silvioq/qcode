@@ -1,4 +1,9 @@
+2009-12-03 Silvio Quadri <silvioq@gmail.com>
+  * QAsm:
+	  Se corrige bug para las instrucciones st puntero
 
+  * Etiquetas nombradas: 
+	  Agrego posibilidad de busqueda de las mismas
 
 2009-11-26 Silvio Quadri <silvioq@gmail.com>
   * First commit
