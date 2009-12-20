@@ -137,7 +137,7 @@ void  qasmprintf( char* format, ... ){
   if( !qasm_verbose ) return;
   va_list  a;
   va_start( a, format );
-  printf( "%.4d: ", qasmlineno );
+  printf( "(%s)%.4d: ", ( qasm_filename ? qasm_filename : "-" ),  qasmlineno );
   vprintf( format, a );
   printf( "\n" );
   va_end( a );
@@ -1737,7 +1737,7 @@ yyreturn:
 }
 
 
-#line 176 "qasm-parser.y"
+#line 174 "qasm-parser.y"
 
 
 int   qasm_parse_filename( char* filename, int flags ){
@@ -1748,6 +1748,7 @@ int   qasm_parse_filename( char* filename, int flags ){
         return 0;
     }
 
+    qasm_filename = filename;
     ret = qasm_parse( ff, flags );
     fclose( ff );
     return ret;

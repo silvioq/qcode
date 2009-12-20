@@ -11,6 +11,19 @@
 #include "qasm-parser.h"
 #include "qasm.h"
 
+/*
+ * Estas definiciones son para mantener el 
+ * stack de llamados de defines y todo eso
+ */
+
+#define MAX_INCLUDE_DEPTH 32
+YY_BUFFER_STATE   include_stack[MAX_INCLUDE_DEPTH];
+char*             include_strings[MAX_INCLUDE_DEPTH];
+int               include_lineno[MAX_INCLUDE_DEPTH];
+int               include_stack_ptr = 0;
+void              include_file( char* filename );
+
+
 %}
 
 %option batch
@@ -28,6 +41,19 @@ NUM     [0-9]+
 ^{WORD}\:       { qasmlval = (long)strdup(yytext); 
                   ((char*)(long)qasmlval)[yyleng - 1] = 0;
                   return  TOK_LAB; 
+                }
+
+^\.include[ \t]+\"[^\"\n]+\"[ \t]*\n { 
+                  char* s;
+                  s = strchr( yytext, '"' );
+                  if( s ){
+                     char* filename = strdup( s + 1 );
+                     char* pos_comillas = strchr( filename, '"' );
+                     if( pos_comillas ){
+                        pos_comillas[0]  = 0;
+                        include_file( filename );
+                     }
+                  }
                 }
 
 nop             { qasmlval = QCNOP; return TOK_INS; }
@@ -90,5 +116,60 @@ r{NUM}          { int i = atoi( yytext + 1 );
 \n              { return  TOK_SEP; }
 .               { return (int) yytext[0]; }
 
+<<EOF>>         {
+                  if( include_stack_ptr == 0 ) yyterminate(); 
+                  else {
+                    if( include_strings[include_stack_ptr] ){
+                      free( include_strings[include_stack_ptr] );
+                      include_strings[include_stack_ptr] = NULL;
+                    }
+                    include_stack_ptr --;
+                    YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+                    yy_switch_to_buffer( include_stack[include_stack_ptr] );
+                    yylineno = include_lineno[include_stack_ptr];
+                    yy_delete_buffer( b );
+                  } 
+                }
 
 %%
+
+void   qasm_scan_save( ){
+  include_stack[include_stack_ptr]   = YY_CURRENT_BUFFER;
+  if( qasm_filename )
+    include_strings[include_stack_ptr] = strdup( qasm_filename );
+  else
+    include_strings[include_stack_ptr] = NULL;
+  include_lineno[include_stack_ptr]  = yylineno;
+  include_stack_ptr ++;
+}
+
+
+void   include_file( char* filename ){
+  FILE* ff;
+  // Listo ... verifico si hay lugar en el stack
+  if( include_stack_ptr == MAX_INCLUDE_DEPTH ){
+    qasmerror( "Insuficiente espacio para seguir incluyendo archivos" );
+    return;
+  }
+
+  ff = fopen( filename, "r" );
+  if( !ff ){
+    char err[1024];
+    if( strlen( filename ) > 128 ) filename[100] = '.';
+    sprintf( err, "Error %d (%s) al abrir \"%s\"\n", errno, strerror( errno ), filename );
+    qasmerror(err)  ;
+    return;
+  }
+
+
+  qasmprintf( "Incluyendo : %s", filename );
+  qasm_scan_save( );
+  yy_switch_to_buffer( yy_create_buffer( ff, YY_BUF_SIZE ) );
+  qasm_filename = filename;
+  yylineno = 1;
+  
+}
+
+  
+
+

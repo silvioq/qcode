@@ -51,12 +51,14 @@ int  main(int argc, char** argv) {
             }
         }
 
-        if( optind == argc ) 
+        if( optind == argc ) {
             ret = qasm_parse( stdin, flags );
-        else{
+            if( !ret ) exit( 1 );
+        } else {
             filename = argv[optind];
             if( flags & QASM_VERBOSE ) printf( "Abriendo %s\n", filename );
             ret = qasm_parse_filename( filename, flags );
+            if( !ret ) exit( 1 );
         }
 
         if( run_program && ret && qasm ){

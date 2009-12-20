@@ -24,5 +24,6 @@ extern  QCode*  qasm;
 
 int   qasm_parse_filename( char* filename, int flags );
 int   qasm_parse( FILE* f, int flags );
+char*             qasm_filename;
 
 #endif

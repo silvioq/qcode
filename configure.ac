@@ -1,4 +1,4 @@
-AC_INIT([qcode],[0.0.2], [silvioq@gmail.com])
+AC_INIT([qcode],[0.0.3], [silvioq@gmail.com])
 AM_INIT_AUTOMAKE
 AC_PROG_CC
 AC_PROG_RANLIB
