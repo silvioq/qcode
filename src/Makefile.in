@@ -55,6 +55,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libqcode_la_LIBADD =
 am_libqcode_la_OBJECTS = qcode.lo md5.lo
 libqcode_la_OBJECTS = $(am_libqcode_la_OBJECTS)
+libqcode_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libqcode_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -189,6 +192,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libqcode.la
 libqcode_la_SOURCES = qcode.c qcode.h md5.c md5.h
+libqcode_la_LDFLAGS = -version-info 0:3:0
 include_HEADERS = qcode.h
 all: all-am
 
@@ -251,7 +255,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libqcode.la: $(libqcode_la_OBJECTS) $(libqcode_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libqcode_la_OBJECTS) $(libqcode_la_LIBADD) $(LIBS)
+	$(libqcode_la_LINK) -rpath $(libdir) $(libqcode_la_OBJECTS) $(libqcode_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
