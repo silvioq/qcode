@@ -32,7 +32,7 @@ int  main(int argc, char** argv) {
         int  flags = 0;
         int  opt = 0;
         int  run_program  = 0;
-        int  ret;
+        long ret;
         char* filename;
 
         while ((opt = getopt(argc, argv, "rdv")) != -1){
