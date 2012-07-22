@@ -30,12 +30,11 @@ static inline void* qcode_debug_alloc(size_t size){
     return r;
 }
 #define  ALLOC(s)  qcode_debug_alloc(s)
-static inline void* qcode_debug_realloc(void* p, size_t size){
-    void* r = realloc(p, size);
-    printf( "DEBUG_RELOC: %p = %p(%d)\n", p, r, (int)size );
-    return r;
-}
-#define  REALLOC(p,s)  qcode_debug_realloc(p,s)
+#define  REALLOC(p,s) ({  \
+    void *r =  realloc(p, s);\
+    printf( "DEBUG_RELOC: " __FILE__ ":%d %p = %p(%d)\n", __LINE__, p, r, (int)s );\
+    r;} )
+      
 #define  FREE(p){\
         printf( "DEBUG_FREE : %p\n", p ); free(p ); \
     }
@@ -58,8 +57,8 @@ static inline void* qcode_debug_realloc(void* p, size_t size){
 #define  ALLOC_K  16
 
 
-QCodeLab*  qcode_search_label(QCode* qcode, int label );
-QCodeLab*  qcode_new_label(QCode* qcode, char* label_name );
+static  QCodeLab*  qcode_search_label(QCode* qcode, int label );
+static  QCodeLab*  qcode_new_label(QCode* qcode, char* label_name );
 
 #define  NUMLABEL(numlab, labelname) \
   { numlab = md5_mem( label_name, strlen( label_name ) );\
@@ -232,13 +231,13 @@ int       qcode_slab  ( QCode* qcode, char* label_name ){
  * en forma generica
  *
  * */
-QCodeLab*  qcode_new_label(QCode* qcode, char* label_name ){
+static  QCodeLab*  qcode_new_label(QCode* qcode, char* label_name ){
     int  numlab;
     QCodeLab*  l ;
 
     if( !qcode->lab_list ) {
         assert( qcode->lab_list  = ALLOC( sizeof( QCodeLab ) * ALLOC_K ) );
-        qcode->lab_alloc = ALLOC_K;
+        qcode->lab_alloc = ALLOC_K ;
     } else if( qcode->lab_count ==  qcode->lab_alloc ) {
         qcode->lab_alloc += ALLOC_K;
         assert( qcode->lab_list  = REALLOC( qcode->lab_list, sizeof( QCodeLab ) * qcode->lab_alloc ) );
@@ -264,7 +263,7 @@ QCodeLab*  qcode_new_label(QCode* qcode, char* label_name ){
  * Busca una etiqueta a partir del numero ... si
  * no encuentra nada, retorna nulo
  * */
-QCodeLab*  qcode_search_label(QCode* qcode, int label ){
+static  QCodeLab*  qcode_search_label(QCode* qcode, int label ){
     int i;
     for( i = 0; i < qcode->lab_count; i ++ ){
         register QCodeLab* l = &( qcode->lab_list[i] );
@@ -279,7 +278,7 @@ QCodeIns*  qcode_new_inst( QCode* qcode ){
     if( !qcode->inst_list ){
         assert( qcode->inst_list  = ALLOC( sizeof( QCodeIns ) * ALLOC_K ) );
         qcode->inst_alloc = ALLOC_K;
-    } else if( qcode->inst_count == qcode->inst_alloc ){
+    } else if( qcode->inst_count >= qcode->inst_alloc ){
         qcode->inst_alloc += ALLOC_K;
         assert( qcode->inst_list  = REALLOC( qcode->inst_list, sizeof( QCodeIns ) * qcode->inst_alloc ) );
     }
